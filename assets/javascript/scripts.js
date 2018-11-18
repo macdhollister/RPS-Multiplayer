@@ -1,5 +1,20 @@
-// $('#gameRow').hide();
-$('#nameInputRow').hide();
+/*
+ISSUES:
+    Still need to account for spectators
+    both spectator screen and the logic of 
+    what happens when a spectator enters the game
+
+*/
+
+// jQuery variables
+nameInput = $('#nameInput')
+nameInputRow = $('#nameInputRow');
+gameRow = $('#gameRow');
+username = $('#username');
+opponent = $('#opponent');
+
+gameRow.hide();
+// nameInputRow.hide();
 
 // Initialize Firebase
 var config = {
@@ -15,46 +30,32 @@ let database = firebase.database();
 
 // Game Data
 let game = {
-    player1 : {
-        name : '',
-        wins : 0,
-        losses : 0,
-        choice : 'none'
-    },
-
-    player2 : {
-        name : '',
-        wins : 0,
-        losses : 0,
-        choice : 'none'  
-    },
-
-    userPersona : 'spectator',
-    userName : '',
-    theme : 1
+    player1 : {},
+    player2 : {},
+    userPersona : undefined,
+    userName : undefined,
+    theme : 1,
+    numPlayers : 0
 }
-
 database.ref().on("value", function(snapshot) {
-    let p1 = snapshot.val().player1;
-    let p2 = snapshot.val().player2;
+    if (snapshot.val() !== null) {
+        let p1 = snapshot.val().player1;
+        let p2 = snapshot.val().player2;
 
-    /*
-    Check if names are in database
-    if p1/p2 is in, change p1/p2 column appropriately
-        Needs to say "waiting for other player"
-        or something similar. Will only display
-        actual game when BOTH players are in game
-    */
+        if (snapshot.val().player1 !== undefined) {
+            game.player1.name = p1.name;
+            game.player1.wins = p1.wins;
+            game.player1.losses = p1.losses;
+            game.player1.choice = p1.choice;
+        }
 
-    game.player1.name = p1.name;
-    game.player1.wins = p1.wins;
-    game.player1.losses = p1.losses;
-    game.player1.choice = p1.choice;
-
-    game.player2.name = p2.name;
-    game.player2.wins = p2.wins;
-    game.player2.losses = p2.losses;
-    game.player2.choice = p2.choice;
+        if (snapshot.val().player2 !== undefined) {
+            game.player2.name = p2.name;
+            game.player2.wins = p2.wins;
+            game.player2.losses = p2.losses;
+            game.player2.choice = p2.choice;
+        }
+    }
 
     /*
     with these values stored, update columns respectively
@@ -66,24 +67,44 @@ database.ref().on("value", function(snapshot) {
 $(document).on('click', '#startPlayer', function(event) {
     event.preventDefault();
 
-    game.userName = $('#nameInput').val().trim();
+    game.userName = nameInput.val().trim();
 
     if (game.player1.name === undefined) {
         game.player1 = resetPlayer(game.userName);
+        game.userPersona = 'player1';
+        game.numPlayers++;
     } else if (game.player2.name === undefined) {
         game.player2 = resetPlayer(game.userName);
+        game.userPersona = 'player2';
+        game.numPlayers++;
     } else {
-        // make player a spectator
+        game.userPersona = 'spectator'
         // Make spectator screen?
     }
 
-    console.log(game);
-})
+    username.text(game.userName);
 
-// database.ref().update({
-//     player1 : resetPlayer(),
-//     player2 : resetPlayer()
-// })
+    // if not a spectator, show game screen
+    if (game.userPersona !== 'spectator') {
+        nameInputRow.hide();
+        gameRow.show();
+        if (game.userPersona === 'player1') {
+            if (game.numPlayers === 2) opponent.text(game.player2.name);
+            else opponent.text('Waiting on a second player...');
+        }
+    } // else if a spectator, show spectator screen
+
+    // finally, update firebase
+    if (game.userPersona === 'player1') {
+        database.ref().update({
+            player1 : game.player1
+        })
+    } else if (game.userPersona === 'player2') {
+        database.ref().update({
+            player2 : game.player2
+        })
+    }
+})
 
 function resetPlayer() {
     let player = {
@@ -99,11 +120,6 @@ function resetPlayer() {
 
     return player;
 }
-
-function updateDatabase() {
-    console.log('Database Updated! (but not really)')
-}
-
 
 
 

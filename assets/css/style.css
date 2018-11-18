@@ -17,7 +17,12 @@
     width: 20%;
 }
 
-#chatBox {
+#chatContainer {
+    border-style: solid;
+    border-width: 1px;
+}
+
+.choiceImg {
     border-style: solid;
     border-width: 1px;
 }
