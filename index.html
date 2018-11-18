@@ -26,58 +26,61 @@
 
         <hr>
 
-
-        <div class="row" id="gameRow">
-            <div class="col-6" id="p1Col">
-                <div id="p1Content">
-                    <!-- To remove (will be added to JS makeGameCol1()) -->
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-6">
-                                <h2>Hello <span id="username">Mac</span>!</h2>
-                                <h3>Opponent: <span id="opponent">Mac2</span></h3>
-
-                                <div id="buttonsContainer">
-                                    <button class="choiceBtn"><img id="fireChoice" class="img img-fluid" src="assets/images/fire1.png"></button>
-                                    <button class="choiceBtn"><img id="waterChoice" class="img img-fluid" src="assets/images/water1.png"></button>
-                                    <button class="choiceBtn"><img id="grassChoice" class="img img-fluid" src="assets/images/grass1.png"></button>
-                                </div>
-
-                                <h3>Game Messages</h3>
-                                <div id="gameLog"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End remove block -->
-                </div>
-            </div>
-
-            <div class="col-6" id="p2Col">
-                <div id="p2Content">
-                    <!-- To remove (will be added to JS makeGameCol2()) -->
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-6">
-                                <h3>Your Choice</h3>
-                                <img class="img img-fluid" src="assets/images/fire1.png">
-                                <!-- image of user choice -->
-                            </div>
-
-                            <div class="col-6">
-                                <h3>Opponent Choice</h3>
-                                <img class="img img-fluid" src="assets/images/water1.png">
-                                <!-- image of opponent choice -->
-                            </div>
-                        </div>
-                        <div class="row"></div>
-                    </div>
-                    <!-- End remove block -->
+        <div class="row" id="nameInputRow">
+            <div class="col">
+                <div id="nameForm">
+                    <form class="form-group">
+                        <label for="nameInput">
+                            <h3>Input your name!</h3>
+                        </label>
+                        <input type="text" class="form-control" id="nameInput" placeholder="Dan Smith">
+                        <button type="submit" class="btn btn-primary startBtn" id="startPlayer">Play!</button>
+                    </form>
                 </div>
             </div>
         </div>
 
-        <div class="row" id="chatRow">
-            <div id="chatMessages"></div>
+        <div class="row" id="gameRow">
+            <div class="col-6" id="gameCol1">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <h2>Hello <span id="username">Mac</span>!</h2>
+                            <h3>Opponent: <span id="opponent">Mac2</span></h3>
+
+                            <div id="buttonsContainer">
+                                <button class="choiceBtn"><img id="fireChoice" class="img img-fluid" src="assets/images/fire1.png"></button>
+                                <button class="choiceBtn"><img id="waterChoice" class="img img-fluid" src="assets/images/water1.png"></button>
+                                <button class="choiceBtn"><img id="grassChoice" class="img img-fluid" src="assets/images/grass1.png"></button>
+                            </div>
+
+                            <h3>Game Messages</h3>
+                            <div id="gameLog"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6" id="gameCol2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-6">
+                            <h3>Your Choice</h3>
+                            <img class="img img-fluid" src="assets/images/fire1.png">
+                            <!-- image of user choice -->
+                        </div>
+
+                        <div class="col-6">
+                            <h3>Opponent Choice</h3>
+                            <img class="img img-fluid" src="assets/images/water1.png">
+                            <!-- image of opponent choice -->
+                        </div>
+                    </div>
+
+                    <!-- Chat Window -->
+                    <div class="row" id="chatBox">chat</div>
+                </div>
+            </div>
         </div>
     </div>
 

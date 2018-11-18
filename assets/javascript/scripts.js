@@ -1,3 +1,6 @@
+// $('#gameRow').hide();
+$('#nameInputRow').hide();
+
 // Initialize Firebase
 var config = {
     apiKey: "AIzaSyDtkZTgkA6IhFhFYmx88EvXj3ajS2Fo8f8",
@@ -26,7 +29,8 @@ let game = {
         choice : 'none'  
     },
 
-    userPersona : 'Spectator',
+    userPersona : 'spectator',
+    userName : '',
     theme : 1
 }
 
@@ -59,45 +63,46 @@ database.ref().on("value", function(snapshot) {
     */
 });
 
-function updateColumn(num) {
-    let id = `p${num}Content`;
-    $('#'+id).empty();
-    // if column is sign in screen, change to game screen
+$(document).on('click', '#startPlayer', function(event) {
+    event.preventDefault();
 
-    // if column is game screen, change to sign in screen
+    game.userName = $('#nameInput').val().trim();
+
+    if (game.player1.name === undefined) {
+        game.player1 = resetPlayer(game.userName);
+    } else if (game.player2.name === undefined) {
+        game.player2 = resetPlayer(game.userName);
+    } else {
+        // make player a spectator
+        // Make spectator screen?
+    }
+
+    console.log(game);
+})
+
+// database.ref().update({
+//     player1 : resetPlayer(),
+//     player2 : resetPlayer()
+// })
+
+function resetPlayer() {
+    let player = {
+        wins : 0,
+        losses : 0,
+        choice : 'none'
+    }
+
+    if (arguments.length > 0) {
+        player.name = arguments[0];
+        updateDatabase();
+    }
+
+    return player;
 }
 
-// Changes selected column to Name Input display
-function createNameInput(num) {
-    let id = `p${num}Content`;
-    let content = $('#'+id);
-    content.empty();
-
-    content.html(
-        '<form class="form-group">'
-        +   '<label for="nameInput">'
-        +       '<h3>Input your name!</h3>'
-        +   '</label>'
-        +   '<input type="text" class="form-control" id="nameInput' + num + '" placeholder="Dan Smith">'
-        +   '<button type="submit" class="btn btn-primary startBtn" id="startPlayer' + num + '">Play!</button>'
-        +'</form>'
-    );
+function updateDatabase() {
+    console.log('Database Updated! (but not really)')
 }
-
-// Changes selected column to Gameplay display
-function createGameScreen(num) {
-    let id = `p${num}Content`;
-    let content = $('#'+id);
-    content.empty();
-
-    content.html(
-        // create html for game screen
-    )
-}
-
-
-
-
 
 
 
