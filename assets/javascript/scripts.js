@@ -1,8 +1,10 @@
 /*
 ISSUES:
-    Still need to account for spectators
-    both spectator screen and the logic of 
-    what happens when a spectator enters the game
+
+Still need to account for spectators
+both spectator screen and the logic of 
+what happens when a spectator enters the game
+
 
 */
 
@@ -35,8 +37,8 @@ let game = {
     userPersona : undefined,
     userName : undefined,
     theme : 1,
-    numPlayers : 0
 }
+
 database.ref().on("value", function(snapshot) {
     if (snapshot.val() !== null) {
         let p1 = snapshot.val().player1;
@@ -57,6 +59,24 @@ database.ref().on("value", function(snapshot) {
         }
     }
 
+    if (game.userPersona !== 'spectator') {
+        if (game.userPersona === 'player1') {
+            if (game.player2.name !== undefined) {
+                opponent.text(game.player2.name);
+            } else {
+                opponent.text('Waiting for another player to join...');
+            }
+        } else if (game.userPersona === 'player2') {
+            if (game.player1.name !== undefined) {
+                opponent.text(game.player1.name);
+            } else {
+                opponent.text('Waiting for another player to join...');
+            }
+        }
+    } // else if a spectator, show spectator screen
+
+    
+
     /*
     with these values stored, update columns respectively
     This should be done in a separate function so that it can also
@@ -72,11 +92,9 @@ $(document).on('click', '#startPlayer', function(event) {
     if (game.player1.name === undefined) {
         game.player1 = resetPlayer(game.userName);
         game.userPersona = 'player1';
-        game.numPlayers++;
     } else if (game.player2.name === undefined) {
         game.player2 = resetPlayer(game.userName);
         game.userPersona = 'player2';
-        game.numPlayers++;
     } else {
         game.userPersona = 'spectator'
         // Make spectator screen?
@@ -91,7 +109,7 @@ $(document).on('click', '#startPlayer', function(event) {
         if (game.userPersona === 'player1') {
             if (game.numPlayers === 2) opponent.text(game.player2.name);
             else opponent.text('Waiting on a second player...');
-        }
+        } // if userpersona is player2, same thing
     } // else if a spectator, show spectator screen
 
     // finally, update firebase
@@ -104,7 +122,9 @@ $(document).on('click', '#startPlayer', function(event) {
             player2 : game.player2
         })
     }
-})
+
+    console.log(game);
+});
 
 function resetPlayer() {
     let player = {
@@ -115,13 +135,14 @@ function resetPlayer() {
 
     if (arguments.length > 0) {
         player.name = arguments[0];
-        updateDatabase();
     }
 
     return player;
 }
 
-
+$(window).on('unload', function() {
+    database.ref(game.userPersona).remove();
+});
 
 
 
