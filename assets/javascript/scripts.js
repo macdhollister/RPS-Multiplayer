@@ -5,7 +5,6 @@ Still need to account for spectators
 both spectator screen and the logic of 
 what happens when a spectator enters the game
 
-Opponent name doesn't disappear when they leave the game
 */
 
 // jQuery variables
@@ -52,6 +51,8 @@ database.ref().on("value", function(snapshot) {
             game.player1.wins = p1.wins;
             game.player1.losses = p1.losses;
             game.player1.choice = p1.choice;
+        } else {
+            game.player1 = resetPlayer();
         }
 
         if (snapshot.val().player2 !== undefined) {
@@ -59,7 +60,12 @@ database.ref().on("value", function(snapshot) {
             game.player2.wins = p2.wins;
             game.player2.losses = p2.losses;
             game.player2.choice = p2.choice;
+        } else {
+            game.player2 = resetPlayer();
         }
+    } else {
+        game.player1 = resetPlayer();
+        game.player2 = resetPlayer();
     }
 
     if (game.userPersona !== 'spectator') {
@@ -78,15 +84,47 @@ database.ref().on("value", function(snapshot) {
         }
     } // else if a spectator, show spectator screen
 
-    
+    if (game.player1.choice !== 'none' && game.player2.choice !== 'none') {
+        if (game.userPersona === 'player1') {
+            let newImg = `assets/images/${game.player2.choice}.png`;
+            opponentImg.attr('src', newImg);
+        } else if (game.userPersona === 'player2') {
+            let newImg = `assets/images/${game.player1.choice}.png`;
+            opponentImg.attr('src', newImg);
+        }
 
-    /*
-    with these values stored, update columns respectively
-    This should be done in a separate function so that it can also
-    be called with the "click" function for the form submit
-    */
+        let types = ['water', 'fire', 'grass'];
+
+        let p1Choice = game.player1.choice;
+        let p1 = types.indexOf(p1Choice.slice(0,-1));
+    
+        let p2Choice = game.player2.choice;
+        let p2 = types.indexOf(p2Choice.slice(0,-1));
+    
+        if (p1 !== p2) {
+            if ((p1+1)%3 === p2) {
+                // player1 wins
+                console.log('player1 wins');
+            } else if ((p2+1)%3 === p1) {
+                // player2 wins
+                console.log('player2 wins');
+            }
+        } else {
+            // tie
+            console.log('it\'s a tie');
+        }
+        /*
+        This will now check logic
+
+        Both choices are made, so run a function to check who wins
+        */
+    }
+
+
+
 });
 
+// Updates database with user's choice
 $(document).on('click', '.choiceBtn', function(event) {
     let image = $(this).children('img').attr('src');
     let data = image.split('/').pop().split('.')[0];
@@ -99,12 +137,9 @@ $(document).on('click', '.choiceBtn', function(event) {
     }
 
     updateDatabase();
-
-    
-
-    console.log(game);
 })
 
+// assigns user to a player or spectator
 $(document).on('click', '#startPlayer', function(event) {
     event.preventDefault();
 
@@ -131,10 +166,9 @@ $(document).on('click', '#startPlayer', function(event) {
 
     // finally, update firebase
     updateDatabase();
-
-    console.log(game);
 });
 
+// resets a player to empty
 function resetPlayer() {
     let player = {
         wins : 0,
@@ -149,6 +183,7 @@ function resetPlayer() {
     return player;
 }
 
+// updates database with local data
 function updateDatabase() {
     if (game.userPersona === 'player1') {
         database.ref().update({
@@ -161,6 +196,12 @@ function updateDatabase() {
     }
 }
 
+// compares user responses and determines a winner
+// function getWinner() {
+
+// }
+
+// when window is closed/reloaded, remove user from database
 $(window).on('unload', function() {
     database.ref(game.userPersona).remove();
 });
