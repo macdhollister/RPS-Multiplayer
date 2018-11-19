@@ -48,12 +48,6 @@
                             <h2>Hello <span id="username"></span>!</h2>
                             <h3>Opponent: <span id="opponent"></span></h3>
 
-                            <div id="buttonsContainer">
-                                <button class="choiceBtn"><img id="fireChoice" class="img img-fluid" src="assets/images/fire1.png"></button>
-                                <button class="choiceBtn"><img id="waterChoice" class="img img-fluid" src="assets/images/water1.png"></button>
-                                <button class="choiceBtn"><img id="grassChoice" class="img img-fluid" src="assets/images/grass1.png"></button>
-                            </div>
-
                             <h3>Game Messages</h3>
                             <div id="gameLog"></div>
                         </div>
@@ -63,7 +57,16 @@
 
             <div class="col-6" id="gameCol2">
                 <div class="container">
-                    <div class="row">
+                    <div class="row" id="selectionRow">
+                        <h3>Choose a Pokémon!</h3>
+                        <div id="buttonsContainer">
+                            <button class="choiceBtn"><img id="fire" class="img img-fluid" src="assets/images/fire1.png"></button>
+                            <button class="choiceBtn"><img id="water" class="img img-fluid" src="assets/images/water1.png"></button>
+                            <button class="choiceBtn"><img id="grass" class="img img-fluid" src="assets/images/grass1.png"></button>
+                        </div>
+                    </div>
+
+                    <div class="row" id="choiceRow">
                         <div class="col-6">
                             <h3>Your Choice</h3>
                             <img id="playerChoiceImg" class="img img-fluid choiceImg" src="assets/images/blank.png">

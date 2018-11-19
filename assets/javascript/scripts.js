@@ -5,19 +5,28 @@ Still need to account for spectators
 both spectator screen and the logic of 
 what happens when a spectator enters the game
 
+Need to add alerts to game log
+
+Build chat box
+
+Clean up style of the whole page
 */
 
 // jQuery variables
 let nameInput = $('#nameInput')
 let nameInputRow = $('#nameInputRow');
 let gameRow = $('#gameRow');
+let selectionRow = $('#selectionRow');
+let choiceRow = $('#choiceRow');
+
 let username = $('#username');
 let opponent = $('#opponent');
 let userImg = $('#playerChoiceImg');
 let opponentImg = $('#opponentChoiceImg');
 
-gameRow.hide();
-// nameInputRow.hide();
+// gameRow.hide();
+choiceRow.hide();
+nameInputRow.hide();
 
 // Initialize Firebase
 var config = {
@@ -145,6 +154,9 @@ $(document).on('click', '.choiceBtn', function(event) {
     } else if (game.userPersona === 'player2') {
         game.player2.choice = data;
     }
+
+    selectionRow.hide();
+    choiceRow.show();
 
     updateDatabase();
 })

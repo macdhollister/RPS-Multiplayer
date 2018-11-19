@@ -26,3 +26,7 @@
     border-style: solid;
     border-width: 1px;
 }
+
+#selectionRow > h3 {
+    margin: 0 auto;
+}
