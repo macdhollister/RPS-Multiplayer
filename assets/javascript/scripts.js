@@ -5,15 +5,17 @@ Still need to account for spectators
 both spectator screen and the logic of 
 what happens when a spectator enters the game
 
-
+Opponent name doesn't disappear when they leave the game
 */
 
 // jQuery variables
-nameInput = $('#nameInput')
-nameInputRow = $('#nameInputRow');
-gameRow = $('#gameRow');
-username = $('#username');
-opponent = $('#opponent');
+let nameInput = $('#nameInput')
+let nameInputRow = $('#nameInputRow');
+let gameRow = $('#gameRow');
+let username = $('#username');
+let opponent = $('#opponent');
+let userImg = $('#playerChoiceImg');
+let opponentImg = $('#opponentChoiceImg');
 
 gameRow.hide();
 // nameInputRow.hide();
@@ -27,6 +29,7 @@ var config = {
     storageBucket: "rps-multiplayer-8f05a.appspot.com",
     messagingSenderId: "1018950837103"
 };
+
 firebase.initializeApp(config);
 let database = firebase.database();
 
@@ -84,6 +87,24 @@ database.ref().on("value", function(snapshot) {
     */
 });
 
+$(document).on('click', '.choiceBtn', function(event) {
+    let image = $(this).children('img').attr('src');
+    let data = image.split('/').pop().split('.')[0];
+    userImg.attr('src', image);
+
+    if (game.userPersona === 'player1') {
+        game.player1.choice = data;
+    } else if (game.userPersona === 'player2') {
+        game.player2.choice = data;
+    }
+
+    updateDatabase();
+
+    
+
+    console.log(game);
+})
+
 $(document).on('click', '#startPlayer', function(event) {
     event.preventDefault();
 
@@ -106,22 +127,10 @@ $(document).on('click', '#startPlayer', function(event) {
     if (game.userPersona !== 'spectator') {
         nameInputRow.hide();
         gameRow.show();
-        if (game.userPersona === 'player1') {
-            if (game.numPlayers === 2) opponent.text(game.player2.name);
-            else opponent.text('Waiting on a second player...');
-        } // if userpersona is player2, same thing
     } // else if a spectator, show spectator screen
 
     // finally, update firebase
-    if (game.userPersona === 'player1') {
-        database.ref().update({
-            player1 : game.player1
-        })
-    } else if (game.userPersona === 'player2') {
-        database.ref().update({
-            player2 : game.player2
-        })
-    }
+    updateDatabase();
 
     console.log(game);
 });
@@ -138,6 +147,18 @@ function resetPlayer() {
     }
 
     return player;
+}
+
+function updateDatabase() {
+    if (game.userPersona === 'player1') {
+        database.ref().update({
+            player1 : game.player1
+        })
+    } else if (game.userPersona === 'player2') {
+        database.ref().update({
+            player2 : game.player2
+        })
+    }
 }
 
 $(window).on('unload', function() {
