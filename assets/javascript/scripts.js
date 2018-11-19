@@ -100,24 +100,34 @@ database.ref().on("value", function(snapshot) {
     
         let p2Choice = game.player2.choice;
         let p2 = types.indexOf(p2Choice.slice(0,-1));
-    
+
+        // determines who wins
         if (p1 !== p2) {
             if ((p1+1)%3 === p2) {
-                // player1 wins
                 console.log('player1 wins');
+                // increase wins for player1
+                // increase losses for player2
             } else if ((p2+1)%3 === p1) {
-                // player2 wins
                 console.log('player2 wins');
+                // increase wins for player2
+                // increase losses for player1
             }
         } else {
-            // tie
             console.log('it\'s a tie');
+            // increase ties for both players
         }
-        /*
-        This will now check logic
 
-        Both choices are made, so run a function to check who wins
-        */
+        let restart = setTimeout(function() {
+            game.player1.choice = 'none';
+            game.player2.choice = 'none';
+
+            userImg.attr('src', 'assets/images/blank.png');
+            opponentImg.attr('src', 'assets/images/blank.png');
+            updateDatabase();
+        }, 3000);
+
+    } else {
+        opponentImg.attr('src', 'assets/images/blank.png');
     }
 
 
@@ -195,11 +205,6 @@ function updateDatabase() {
         })
     }
 }
-
-// compares user responses and determines a winner
-// function getWinner() {
-
-// }
 
 // when window is closed/reloaded, remove user from database
 $(window).on('unload', function() {
