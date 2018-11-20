@@ -17,9 +17,12 @@
     width: 20%;
 }
 
-#chatContainer {
+#chatBox {
     border-style: solid;
     border-width: 1px;
+    margin-top: 1em;
+    height: 25em;
+    overflow: auto;
 }
 
 .choiceImg {
@@ -29,4 +32,53 @@
 
 #selectionRow > h3 {
     margin: 0 auto;
+}
+
+.nameHeader {
+    text-decoration: underline;
+}
+
+#chatForm {
+    width: 100%;
+}
+
+.chatContainer {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    text-align: left;
+}
+
+.darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.chatContainer::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.opponentName {
+    display: block;
+    float: right;
+    color: #aaa;
+}
+
+.userName {
+    display: block;
+    float: left;
+    color: #999;
+}
+
+.userText {
+    text-align: left;
+}
+
+.opponentText {
+    text-align: right;
 }

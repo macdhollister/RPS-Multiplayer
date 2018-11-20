@@ -18,15 +18,17 @@ let nameInputRow = $('#nameInputRow');
 let gameRow = $('#gameRow');
 let selectionRow = $('#selectionRow');
 let choiceRow = $('#choiceRow');
-
 let username = $('#username');
 let opponent = $('#opponent');
 let userImg = $('#playerChoiceImg');
 let opponentImg = $('#opponentChoiceImg');
+let opponentInfo = $('#opponentInfo');
+let waiting = $('#waiting');
 
-// gameRow.hide();
+
+gameRow.hide();
 choiceRow.hide();
-nameInputRow.hide();
+// nameInputRow.hide();
 
 // Initialize Firebase
 var config = {
@@ -59,6 +61,7 @@ database.ref().on("value", function(snapshot) {
             game.player1.name = p1.name;
             game.player1.wins = p1.wins;
             game.player1.losses = p1.losses;
+            game.player1.ties = p1.ties;
             game.player1.choice = p1.choice;
         } else {
             game.player1 = resetPlayer();
@@ -68,6 +71,7 @@ database.ref().on("value", function(snapshot) {
             game.player2.name = p2.name;
             game.player2.wins = p2.wins;
             game.player2.losses = p2.losses;
+            game.player2.ties = p2.ties;
             game.player2.choice = p2.choice;
         } else {
             game.player2 = resetPlayer();
@@ -79,16 +83,50 @@ database.ref().on("value", function(snapshot) {
 
     if (game.userPersona !== 'spectator') {
         if (game.userPersona === 'player1') {
+            $('#playerWins').text(game.player1.wins);
+            $('#playerLosses').text(game.player1.losses);
+            $('#playerTies').text(game.player1.ties);
+
+            $('#opponentWins').text(game.player2.wins);
+            $('#opponentLosses').text(game.player2.losses);
+            $('#opponentTies').text(game.player2.ties);
+
             if (game.player2.name !== undefined) {
+                opponentInfo.show();
+                waiting.hide();
                 opponent.text(game.player2.name);
             } else {
-                opponent.text('Waiting for another player to join...');
+                opponentInfo.hide();
+                waiting.show();
+                let dots=['.','..','...'];
+                let index = 0;
+                let dotTimer = setInterval(function() {
+                    index = (index+1)%3;
+                    $('#dots').text(dots[index]);
+                },500)
             }
         } else if (game.userPersona === 'player2') {
+            $('#playerWins').text(game.player2.wins);
+            $('#playerLosses').text(game.player2.losses);
+            $('#playerTies').text(game.player2.ties);
+
+            $('#opponentWins').text(game.player1.wins);
+            $('#opponentLosses').text(game.player1.losses);
+            $('#opponentTies').text(game.player1.ties);
+
             if (game.player1.name !== undefined) {
+                opponentInfo.show();
+                waiting.hide();
                 opponent.text(game.player1.name);
             } else {
-                opponent.text('Waiting for another player to join...');
+                opponentInfo.hide();
+                waiting.show();
+                let dots=['.','..','...'];
+                let index = 0;
+                let dotTimer = setInterval(function() {
+                    index = (index+1)%3;
+                    $('#dots').text(dots[index]);
+                },500)
             }
         }
     } // else if a spectator, show spectator screen
@@ -113,18 +151,18 @@ database.ref().on("value", function(snapshot) {
         // determines who wins
         if (p1 !== p2) {
             if ((p1+1)%3 === p2) {
-                console.log('player1 wins');
-                // increase wins for player1
-                // increase losses for player2
+                game.player1.wins++;
+                game.player2.losses++;
             } else if ((p2+1)%3 === p1) {
-                console.log('player2 wins');
-                // increase wins for player2
-                // increase losses for player1
+                game.player2.wins++;
+                game.player1.losses++;
             }
         } else {
-            console.log('it\'s a tie');
-            // increase ties for both players
+            game.player1.ties++;
+            game.player2.ties++;
         }
+
+        console.log(game);
 
         let restart = setTimeout(function() {
             game.player1.choice = 'none';
@@ -133,13 +171,41 @@ database.ref().on("value", function(snapshot) {
             userImg.attr('src', 'assets/images/blank.png');
             opponentImg.attr('src', 'assets/images/blank.png');
             updateDatabase();
-        }, 3000);
+
+            selectionRow.show();
+            choiceRow.hide();
+        }, 5000);
 
     } else {
         opponentImg.attr('src', 'assets/images/blank.png');
     }
 
+});
 
+database.ref().child('chats').on('child_added', function(snapshot) {
+    let chatName = snapshot.val().whoSent;
+    let chatPersona = snapshot.val().persona;
+    let chatMessage = snapshot.val().message;
+
+    let messageFrom;
+    let chatClass = 'chatContainer';
+    console.log(chatPersona);
+    console.log(game.userPersona);
+    if (chatPersona === game.userPersona) {
+        messageFrom = 'user';
+    } else {
+        messageFrom = 'opponent';
+        chatClass += ' darker';
+    }
+
+    $('#chatBox').append(
+        `<div class="${chatClass}">`
+        + `<span class="${messageFrom}Name">${chatName}</span><br>`
+        + `<p class="${messageFrom}Text">${chatMessage}</p>`
+        + `</div>`
+    );
+
+    $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
 
 });
 
@@ -159,7 +225,7 @@ $(document).on('click', '.choiceBtn', function(event) {
     choiceRow.show();
 
     updateDatabase();
-})
+});
 
 // assigns user to a player or spectator
 $(document).on('click', '#startPlayer', function(event) {
@@ -190,11 +256,26 @@ $(document).on('click', '#startPlayer', function(event) {
     updateDatabase();
 });
 
+$(document).on('click', '#chatBtn', function(event) {
+    event.preventDefault();
+
+    let message = $('#chatInput').val();
+
+    database.ref().child('chats').push({
+        whoSent : game.userName,
+        persona : game.userPersona,
+        message : message
+    });
+
+    $('#chatInput').val('');
+})
+
 // resets a player to empty
 function resetPlayer() {
     let player = {
         wins : 0,
         losses : 0,
+        ties : 0,
         choice : 'none'
     }
 
@@ -235,26 +316,6 @@ $(document).on('click', '.startBtn', function(event) {
 
     let id = $(this).attr('id');
 });
-
-function newPlayer1() {
-    database.ref().update({
-        player1 : {
-            wins : 0,
-            losses : 0,
-            choice : 'none'
-        }
-    })
-}
-
-function newPlayer2() {
-    database.ref().update({
-        player2 : {
-            wins : 0,
-            losses : 0,
-            choice : 'none'
-        }
-    })
-}
 
 
 

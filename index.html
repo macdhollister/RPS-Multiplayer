@@ -45,12 +45,32 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-6">
-                            <h2>Hello <span id="username"></span>!</h2>
-                            <h3>Opponent: <span id="opponent"></span></h3>
-
-                            <h3>Game Messages</h3>
-                            <div id="gameLog"></div>
+                            <h3 class="nameHeader">You</h3>
+                            <h4>Name: <span id="username"></span></h4>
+                            <h4>Wins: <span id="playerWins"></span></h4>
+                            <h4>Losses: <span id="playerLosses"></span></h4>
+                            <h4>Ties: <span id="playerTies"></span></h4>
                         </div>
+
+                        <div class="col-6">
+                            <h3 class="nameHeader">Opponent</h3>
+                            <div id="opponentInfo">
+                                <h4>Name: <span id="opponent"></span></h4>
+                                <h4>Wins: <span id="opponentWins"></span></h4>
+                                <h4>Losses: <span id="opponentLosses"></span></h4>
+                                <h4>Ties: <span id="opponentTies"></span></h4>
+                            </div>
+
+                            <div id="waiting">
+                                <h4>Waiting for another player to join</h4>
+                                <h4><span id="dots"></span></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <h3>Game Log:</h3>
+                        <div id="gameLog"></div>
                     </div>
                 </div>
             </div>
@@ -79,7 +99,29 @@
                     </div>
 
                     <!-- Chat Window -->
-                    <div class="row" id="chatContainer">chat</div>
+                    <div class="row">
+                        <div class="col" id="chatBox">
+                            <div class="chatContainer darker">
+                                <span class="opponentName">Opponent</span><br>
+                                <p class="opponentText">Test sentence blah blah blah</p>
+                            </div>
+
+                            <div class="chatContainer">
+                                <span class="userName">User</span><br>
+                                <p class="userText">Another test sentence from the user</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <form class="form-group">
+                                <input type="text" id="chatInput" class="form-control" placeholder="Send a message...">
+                                <div class="input-group-append">
+                                    <button type="submit" id="chatBtn" class="btn btn-primary" type="button">Send</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
