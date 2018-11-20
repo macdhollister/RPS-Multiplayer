@@ -5,11 +5,6 @@ Still need to account for spectators
 both spectator screen and the logic of 
 what happens when a spectator enters the game
 
-Need to add alerts to game log
-
-Build chat box
-
-Clean up style of the whole page
 */
 
 // jQuery variables
@@ -24,6 +19,7 @@ let userImg = $('#playerChoiceImg');
 let opponentImg = $('#opponentChoiceImg');
 let opponentInfo = $('#opponentInfo');
 let waiting = $('#waiting');
+let gameLog = $('#gameLog');
 
 
 gameRow.hide();
@@ -157,16 +153,16 @@ database.ref().on("value", function(snapshot) {
             if ((p1+1)%3 === p2) {
                 game.player1.wins++;
                 game.player2.losses++;
-                console.log(game.player1.name + " wins!");
+                gameLog.text(game.player1.name + " wins!");
             } else if ((p2+1)%3 === p1) {
                 game.player2.wins++;
                 game.player1.losses++;
-                console.log(game.player2.name + " wins!");
+                gameLog.text(game.player2.name + " wins!");
             }
         } else {
             game.player1.ties++;
             game.player2.ties++;
-            console.log("It's a tie!");
+            gameLog.text("It's a tie!");
         }
 
         let restart = setTimeout(function() {
@@ -175,6 +171,7 @@ database.ref().on("value", function(snapshot) {
 
             userImg.attr('src', 'assets/images/blank.png');
             opponentImg.attr('src', 'assets/images/blank.png');
+            gameLog.empty();
             updateDatabase();
 
             selectionRow.show();
@@ -213,7 +210,7 @@ database.ref().child('chats').on('child_added', function(snapshot) {
 });
 
 // Updates database with user's choice
-$(document).on('click', '.choiceBtn', function(event) {
+$(document).on('click', '.choiceBtn', function() {
     let image = $(this).children('img').attr('src');
     let data = image.split('/').pop().split('.')[0];
     userImg.attr('src', image);
@@ -271,6 +268,18 @@ $(document).on('click', '#chatBtn', function(event) {
     });
 
     $('#chatInput').val('');
+})
+
+$(document).on('click', '.genButton', function() {
+    let gen = $(this).attr('gen');
+    let path = 'assets/images/'
+
+    game.theme = gen;
+
+    $('#fire').attr('src', path+'fire'+gen+'.png');
+    $('#water').attr('src', path+'water'+gen+'.png');
+    $('#grass').attr('src', path+'grass'+gen+'.png');
+
 })
 
 // resets a player to empty
