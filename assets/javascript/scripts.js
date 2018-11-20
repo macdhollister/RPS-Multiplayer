@@ -103,7 +103,8 @@ database.ref().on("value", function(snapshot) {
                 let dotTimer = setInterval(function() {
                     index = (index+1)%3;
                     $('#dots').text(dots[index]);
-                },500)
+                },500);
+                $('#chatBox').empty();
             }
         } else if (game.userPersona === 'player2') {
             $('#playerWins').text(game.player2.wins);
@@ -126,7 +127,8 @@ database.ref().on("value", function(snapshot) {
                 let dotTimer = setInterval(function() {
                     index = (index+1)%3;
                     $('#dots').text(dots[index]);
-                },500)
+                },500);
+                $('#chatBox').empty();
             }
         }
     } // else if a spectator, show spectator screen
@@ -144,25 +146,28 @@ database.ref().on("value", function(snapshot) {
 
         let p1Choice = game.player1.choice;
         let p1 = types.indexOf(p1Choice.slice(0,-1));
+        console.log('p1: ' + p1);
     
         let p2Choice = game.player2.choice;
         let p2 = types.indexOf(p2Choice.slice(0,-1));
+        console.log('p2: ' + p2);
 
         // determines who wins
         if (p1 !== p2) {
             if ((p1+1)%3 === p2) {
                 game.player1.wins++;
                 game.player2.losses++;
+                console.log(game.player1.name + " wins!");
             } else if ((p2+1)%3 === p1) {
                 game.player2.wins++;
                 game.player1.losses++;
+                console.log(game.player2.name + " wins!");
             }
         } else {
             game.player1.ties++;
             game.player2.ties++;
+            console.log("It's a tie!");
         }
-
-        console.log(game);
 
         let restart = setTimeout(function() {
             game.player1.choice = 'none';
@@ -189,8 +194,6 @@ database.ref().child('chats').on('child_added', function(snapshot) {
 
     let messageFrom;
     let chatClass = 'chatContainer';
-    console.log(chatPersona);
-    console.log(game.userPersona);
     if (chatPersona === game.userPersona) {
         messageFrom = 'user';
     } else {
@@ -302,31 +305,5 @@ function updateDatabase() {
 // when window is closed/reloaded, remove user from database
 $(window).on('unload', function() {
     database.ref(game.userPersona).remove();
+    database.ref('chats').remove();
 });
-
-
-
-
-
-
-
-/*
-$(document).on('click', '.startBtn', function(event) {
-    event.preventDefault();
-
-    let id = $(this).attr('id');
-});
-
-
-
-function setName(whichPlayer, name) {
-    database.ref().child(whichPlayer).update({
-        name : name
-    })
-}
-
-/*
-When people leave the game:
-
-$(window).unload(function() {...})
-*/
